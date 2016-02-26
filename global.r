@@ -4,7 +4,7 @@ library(leaflet) #for mapping
 library(magrittr) #for %>%
 library(dplyr) #for filtering
 library(shinydashboard) #for dashboard ui
-library(rCharts) #graphs
+library(ggplot2) #graphs
 library(grid) #remove whitespace around plots
 
 #Download and read data

@@ -70,7 +70,10 @@ body <- dashboardBody(
                plotOutput('l1'),
                plotOutput('l2'),
                plotOutput('l3')
-               )))
+               ),
+               tabPanel('About',
+                    includeMarkdown("README.md"))
+               ))
     ))
 
 dashboardPage(

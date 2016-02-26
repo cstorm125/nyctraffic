@@ -1,0 +1,8 @@
+name: nyctraffic
+account: cstorm125
+server: shinyapps.io
+bundleId: 381185
+url: https://cstorm125.shinyapps.io/nyctraffic/
+when: 1456479625.26121
+asMultiple: FALSE
+asStatic: FALSE
