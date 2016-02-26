@@ -1,0 +1,66 @@
+---
+title: "NYC Traffic Incident Visulization - Raw Codes"
+author: "Charin Polpanumas"
+date: "February 22, 2559 BE"
+output:
+  html_document:
+    toc: true
+    number_sections: true
+    theme: spacelab
+---
+# Load libraries
+```{r}
+library(knitr) #for knitting
+library(magrittr) #for the %>%
+library(leaflet) #for leaftlet
+library(rgdal) #for reading shapefiles
+```
+
+# Download and read traffic event data
+```{r}
+
+if (!file.exists('nycevents.csv'))
+download.file(url='https://data.cityofnewyork.us/api/views/h9gi-nx95/rows.csv?accessType=DOWNLOAD',
+              dest='nycevents.csv')
+nycevents<-read.csv('nycevents.csv')
+nycevents<-nycevents[complete.cases(nycevents$LATITUDE) & complete.cases(nycevents$LONGITUDE),]
+```
+#ReadRDS
+```{r}
+#saveRDS(nycevents,file='nycevents.rds')
+nycevents<-readRDS('nycevents.rds')
+```
+# Make Pop-up Info
+```{r}
+head<-'<b>Event Info</b>'
+datetime <- paste(nycevents$DATE,nycevents$TIME, sep=' ')
+contrib<-paste('Cause:',nycevents$CONTRIBUTING.FACTOR.VEHICLE.1,sep=' ')
+veh <- paste('Vehicle Type:',nycevents$VEHICLE.TYPE.CODE.1,sep=' ')
+injured <- paste('Injureded:',nycevents$NUMBER.OF.PERSONS.INJURED,sep=' ')
+killed <- paste('Killed:',nycevents$NUMBER.OF.PERSONS.KILLED,sep=' ')
+str<-paste(head,datetime,contrib,veh,injured,killed,sep='</br>')
+nycevents$str<-str
+```
+# Create heatmap parameters
+```{r}
+nycevents<-nycevents[1:10000,]
+X=cbind(lng=nycevents$LONGITUDE,lat=nycevents$LATITUDE)
+library(KernSmooth)
+kde2d <- bkde2D(X, bandwidth=c(bw.ucv(X[,1]),bw.ucv(X[,2])))
+
+x=kde2d$x1
+y=kde2d$x2
+z=kde2d$fhat
+CL=contourLines(x , y , z)
+```
+#Add roads
+```{r, eval=FALSE}
+roads <- readOGR("new_york_highway","new_york_highway")
+```
+# Map
+```{r}
+l<-leaflet(nycevents[1:1000,]) %>% 
+    addTiles() %>% 
+    addPolygons(CL[[5]]$x,CL[[5]]$y,fillColor = "red", stroke = FALSE)
+```
+
